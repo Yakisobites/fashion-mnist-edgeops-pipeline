@@ -1,6 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iot from 'aws-cdk-lib/aws-iot';
 import { Construct } from 'constructs';
 
 export class InfraStack extends cdk.Stack {
@@ -23,6 +25,31 @@ export class InfraStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    // 1. IoT Rule が DynamoDB に書き込むための IAM ロール
+    const iotRole = new iam.Role(this, 'IotToDynamoDBRole', {
+      assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
+    });
+
+    inferenceTable.grantWriteData(iotRole);
+
+    // 2. IoT Topic Rule (device/inference/data へのメッセージを DynamoDB へ自動書き込み)
+    new iot.CfnTopicRule(this, 'InferenceDataTopicRule', {
+      topicRulePayload: {
+        sql: "SELECT * FROM 'device/inference/data'",
+        actions: [
+          {
+            dynamoDBv2: {
+              putItem: {
+                tableName: inferenceTable.tableName,
+              },
+              roleArn: iotRole.roleArn,
+            },
+          },
+        ],
+        ruleDisabled: false,
+      },
+    });
+
     // リソース名の出力
     new cdk.CfnOutput(this, 'ImageBucketName', {
       value: imageBucket.bucketName,
@@ -32,4 +59,3 @@ export class InfraStack extends cdk.Stack {
     });
   }
 }
-
