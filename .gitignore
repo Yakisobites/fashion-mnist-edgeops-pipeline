@@ -1,0 +1,29 @@
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Task 1: AWS CDK (TypeScript / Node)
+node_modules/
+dist/
+cdk.out/
+*.js
+!jest.config.js
+*.d.ts
+
+# Task 2: Python / Jetson
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.env
+
+# Task 3: Go
+/web/bin/
+*.exe
+*.out
+
+# AWS Credentials / Logs
+.aws/
+*.log
+
