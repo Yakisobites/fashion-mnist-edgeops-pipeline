@@ -3,6 +3,7 @@ import json
 import os
 import time
 import uuid
+
 import boto3
 from PIL import Image
 
