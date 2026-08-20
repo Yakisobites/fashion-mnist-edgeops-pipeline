@@ -27,3 +27,20 @@ venv/
 .aws/
 *.log
 
+# 証明書・鍵関連フォルダ
+/certs/
+/certificates/
+
+# 証明書・鍵の拡張子指定
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+*.csr
+
+# 環境変数・秘密情報ファイル
+.env
+.env.*
+!.env.example
+
